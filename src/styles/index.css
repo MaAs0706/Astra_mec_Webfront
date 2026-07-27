@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+@import "@fontsource/chakra-petch/600.css";
+@import "@fontsource/chakra-petch/700.css";
+@import "@fontsource/geist-sans/400.css";
+@import "@fontsource/geist-sans/500.css";
+@import "@fontsource/jetbrains-mono/500.css";
+
+@theme {
+  /* Astra Cosmic Technical -- design tokens, see ARCHITECTURE.md / DESIGN.md */
+  --color-space-black: #030712;
+  --color-deep-nebula: #1e1b4b;
+  --color-primary-purple: #8b5cf6;
+  --color-secondary-blue: #123eea;
+  --color-tertiary-cyan: #00f2fe;
+  --color-metallic-silver: #94a3b8;
+  --color-starlight-white: #ffffff;
+
+  --font-display: "Chakra Petch", sans-serif;
+  --font-body: "Geist", "Geist Sans", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-metallic-silver);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-space-black);
+    color: var(--color-starlight-white);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--color-primary-purple);
+    color: var(--color-starlight-white);
+  }
+}
+
+@layer components {
+  .container-astra {
+    width: 100%;
+    max-width: 1280px;
+    margin-inline: auto;
+    padding-inline: 20px;
+  }
+
+  @media (min-width: 768px) {
+    .container-astra {
+      padding-inline: 40px;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .container-astra {
+      padding-inline: 80px;
+    }
+  }
+
+  .glass-panel {
+    background-color: color-mix(in srgb, var(--color-deep-nebula) 40%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid color-mix(in srgb, var(--color-metallic-silver) 20%, transparent);
+  }
+
+  /* Instrument-feed scanlines: reinforces "live feed", not decorative space */
+  .effect-scanlines {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgba(226, 232, 240, 0.5) 0px,
+      rgba(226, 232, 240, 0.5) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    background-size: 100% 3px;
+    animation: scanline-drift 9s linear infinite;
+  }
+
+  /* Fine film grain so dark panels read as material, not a flat gradient */
+  .effect-grain {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 160px 160px;
+    mix-blend-mode: overlay;
+  }
+
+  .animate-data-ticker {
+    animation: data-ticker 34s linear infinite;
+  }
+}
+
+@keyframes scanline-drift {
+  from {
+    background-position-y: 0;
+  }
+  to {
+    background-position-y: 120px;
+  }
+}
+
+@keyframes data-ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
