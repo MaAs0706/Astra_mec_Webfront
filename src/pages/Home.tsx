@@ -11,10 +11,10 @@ export function Home() {
     <>
       <Hero />
       <TelemetryBar />
-      <Mission />
       <RecentEvents />
-      <GalleryTeaser />
       <TeamTeaser />
+      <Mission />
+      <GalleryTeaser />
       <JoinCta />
     </>
   );

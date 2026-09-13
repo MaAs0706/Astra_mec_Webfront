@@ -7,8 +7,13 @@ import type { AstraEvent } from "@/types/Event";
  * See ARCHITECTURE.md section 6.
  */
 
+export function eventStartsAt({ date, time }: Pick<AstraEvent, "date" | "time">) {
+  // Dates/times are supplied in the club's local time, not as UTC timestamps.
+  return new Date(`${date}T${time}:00`).getTime();
+}
+
 function sortByDateAsc(a: AstraEvent, b: AstraEvent) {
-  return new Date(a.date).getTime() - new Date(b.date).getTime();
+  return eventStartsAt(a) - eventStartsAt(b);
 }
 
 export async function getEvents(): Promise<AstraEvent[]> {
@@ -18,7 +23,7 @@ export async function getEvents(): Promise<AstraEvent[]> {
 export async function getNextEvent(): Promise<AstraEvent | null> {
   const now = Date.now();
   const upcoming = events
-    .filter((event) => new Date(event.date).getTime() >= now)
+    .filter((event) => eventStartsAt(event) >= now)
     .sort(sortByDateAsc);
   return upcoming[0] ?? null;
 }
