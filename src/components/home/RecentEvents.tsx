@@ -115,6 +115,39 @@ export function RecentEvents() {
     };
   }, [progress]);
 
+  useEffect(() => {
+    const getTimelineBounds = () => {
+      const scene = sceneRef.current;
+      const panel = panelRef.current;
+      if (!scene || !panel) return null;
+
+      const sceneStart = window.scrollY + scene.getBoundingClientRect().top;
+      const stickyTop = Number.parseFloat(window.getComputedStyle(panel).top) || 0;
+      const panelHeight = panel.getBoundingClientRect().height;
+      return {
+        start: sceneStart - stickyTop,
+        end: sceneStart + scene.offsetHeight - panelHeight,
+      };
+    };
+
+    const slowTimelineWheel = (event: WheelEvent) => {
+      if (event.ctrlKey || window.innerWidth < 768 || event.deltaY === 0) return;
+      const bounds = getTimelineBounds();
+      if (!bounds) return;
+
+      // Do not change the page's approach speed. Once the signal begins its
+      // route, keep the whole journey deliberate—including node holds—then
+      // release normal scrolling as soon as the route has completed.
+      if (window.scrollY < bounds.start || window.scrollY > bounds.end) return;
+
+      event.preventDefault();
+      window.scrollBy({ top: event.deltaY * 0.30 });
+    };
+
+    window.addEventListener("wheel", slowTimelineWheel, { passive: false });
+    return () => window.removeEventListener("wheel", slowTimelineWheel);
+  }, []);
+
   return (
     <section className="container-astra relative py-16 sm:py-24" aria-labelledby="timeline-title">
       <SectionGlow color="rgba(0, 242, 254, 0.18)" className="-left-36 top-20 h-80 w-80" />
