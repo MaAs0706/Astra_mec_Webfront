@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { siteConfig } from "@/constants/site";
 import { INTRO_TIMING } from "@/constants/intro";
 import { markIntroPlayed } from "@/utils/introSession";
+import logo from "@/assets/images/astra-logo.png";
 
 type Phase = "boot" | "launchCode" | "robotCode" | "checks" | "title" | "morphing";
 
@@ -95,7 +96,15 @@ export function IntroSequence({ onFlightStart, onFlightEnd, onComplete }: IntroS
       <motion.div className="absolute inset-0 flex items-center justify-center" animate={{ opacity: showTitle ? 1 : 0 }} transition={{ duration: CROSSFADE_MS / 1000, ease: "easeInOut" }}>
         {phase === "title" && <div className="relative flex flex-col items-center gap-4 text-center">
           <motion.span initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#39ff88] sm:text-xs">Mission log // system online</motion.span>
-          <motion.div layoutId="astra-brand" transition={{ duration: FLIGHT_MS / 1000, ease: [0.16, 1, 0.3, 1] }} className="relative flex items-center justify-center overflow-hidden rounded-full px-8 py-3 sm:px-14 sm:py-5"><motion.span initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.14, ease: "easeOut" }} className="whitespace-nowrap font-display text-5xl font-bold tracking-[0.12em] text-starlight-white sm:text-7xl">ASTRA</motion.span></motion.div>
+          <div className="relative flex h-36 w-36 items-center justify-center sm:h-44 sm:w-44">
+            <motion.svg aria-hidden="true" viewBox="0 0 200 200" className="absolute inset-0 h-full w-full" initial={{ opacity: 0, rotate: -25 }} animate={{ opacity: 1, rotate: 0 }} transition={{ duration: 0.7 }}>
+              <motion.circle cx="100" cy="100" r="78" fill="none" stroke="rgba(0,242,254,0.6)" strokeWidth="1" strokeDasharray="5 8" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8, delay: 0.12 }} />
+              <motion.ellipse cx="100" cy="100" rx="96" ry="38" fill="none" stroke="rgba(139,92,246,0.7)" strokeWidth="1" transform="rotate(-32 100 100)" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.9, delay: 0.25 }} />
+              <motion.circle cx="165" cy="62" r="3.5" fill="#00f2fe" animate={{ rotate: 360 }} transition={{ duration: 4, repeat: Infinity, ease: "linear" }} style={{ transformOrigin: "100px 100px" }} />
+            </motion.svg>
+            <motion.div layoutId="astra-brand" transition={{ duration: FLIGHT_MS / 1000, ease: [0.16, 1, 0.3, 1] }} className="relative h-20 w-20 overflow-hidden rounded-full border border-tertiary-cyan/45 shadow-[0_0_26px_rgba(0,242,254,0.3)] sm:h-24 sm:w-24"><img src={logo} alt={siteConfig.name} className="h-full w-full object-cover" /></motion.div>
+          </div>
+          <motion.span initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.14, ease: "easeOut" }} className="whitespace-nowrap font-display text-5xl font-bold tracking-[0.12em] text-starlight-white sm:text-7xl">ASTRA</motion.span>
           <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="font-mono text-[10px] uppercase tracking-[0.2em] text-metallic-silver sm:text-xs">{siteConfig.fullName}</motion.span>
         </div>}
       </motion.div>

@@ -17,6 +17,15 @@ export function markIntroPlayed(): void {
   }
 }
 
+/** Allows an intentional replay from the Home navbar logo. */
+export function clearIntroPlayed(): void {
+  try {
+    sessionStorage.removeItem(SESSION_KEY);
+  } catch {
+    // Replaying is optional when storage is unavailable.
+  }
+}
+
 export function prefersReducedMotionNow(): boolean {
   if (typeof window === "undefined") return false;
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;

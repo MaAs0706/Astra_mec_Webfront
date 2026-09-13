@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/common/Button";
 import { Starfield } from "@/components/common/Starfield";
@@ -28,10 +28,25 @@ const edgeFadeMask =
 
 export function Hero() {
   const prefersReducedMotion = useReducedMotion();
+  const [showVideo, setShowVideo] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
   const videoARef = useRef<HTMLVideoElement>(null);
   const videoBRef = useRef<HTMLVideoElement>(null);
   useCrossfadeVideoLoop(videoARef, videoBRef);
+
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 768px)");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const connection = navigator as Navigator & { connection?: { saveData?: boolean } };
+    const update = () => setShowVideo(desktop.matches && !reducedMotion.matches && !connection.connection?.saveData);
+    update();
+    desktop.addEventListener("change", update);
+    reducedMotion.addEventListener("change", update);
+    return () => {
+      desktop.removeEventListener("change", update);
+      reducedMotion.removeEventListener("change", update);
+    };
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -52,7 +67,7 @@ export function Hero() {
       </div>
 
       {/* Iris reveal: the feed "opens" onto the page like a shutter, rather than fading in */}
-      <motion.div
+      {showVideo && <motion.div
         className="absolute inset-0"
         initial={prefersReducedMotion ? false : { clipPath: "circle(0% at 50% 50%)" }}
         animate={{ clipPath: "circle(150% at 50% 50%)" }}
@@ -89,7 +104,7 @@ export function Hero() {
         {/* Instrument-feed texture — reinforces "live feed", not decorative space */}
         <div className="effect-scanlines pointer-events-none absolute inset-0 opacity-[0.04]" />
         <div className="effect-grain pointer-events-none absolute inset-0 opacity-[0.05]" />
-      </motion.div>
+      </motion.div>}
 
       {/* Vignette so nav + copy stay legible over the footage — kept light so the nebula's color still reads */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-space-black/50 via-space-black/5 to-space-black" />

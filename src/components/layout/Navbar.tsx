@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import { navLinks, siteConfig } from "@/constants/site";
 import { INTRO_TIMING } from "@/constants/intro";
@@ -71,7 +71,8 @@ export function Navbar() {
   const [hidden, setHidden] = useState(false);
   const lastScrollY = useRef(0);
   const prefersReducedMotion = useReducedMotion();
-  const { morphing } = useIntroContext();
+  const { morphing, replayIntro } = useIntroContext();
+  const location = useLocation();
 
   useEffect(() => {
     function handleScroll() {
@@ -101,7 +102,17 @@ export function Navbar() {
       className="sticky top-0 z-50 border-b border-metallic-silver/15 bg-space-black/80 backdrop-blur-md"
     >
       <div className="mx-auto flex h-20 w-full max-w-[1400px] items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-        <NavLink to="/" aria-label={siteConfig.name} className="flex items-center">
+        <NavLink
+          to="/"
+          aria-label={siteConfig.name}
+          className="flex items-center"
+          onClick={(event) => {
+            if (location.pathname === "/") {
+              event.preventDefault();
+              replayIntro();
+            }
+          }}
+        >
           <BrandMark morphing={morphing} />
         </NavLink>
 

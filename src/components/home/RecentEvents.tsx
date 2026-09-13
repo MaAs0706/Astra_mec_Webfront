@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import { Link } from "react-router-dom";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { SectionGlow } from "@/components/common/SectionGlow";
@@ -41,6 +41,13 @@ function formatTime(time: string) {
 /** A scrolling mission-control timeline that remains a clear single column on mobile. */
 export function RecentEvents() {
   const [events, setEvents] = useState<AstraEvent[]>([]);
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: timelineRef,
+    offset: ["start 80%", "end 55%"],
+  });
+  const progress = useSpring(scrollYProgress, { stiffness: 90, damping: 22 });
+  const signalPosition = useTransform(progress, [0, 1], ["0%", "100%"]);
 
   useEffect(() => {
     getRecentEvents(4).then(setEvents);
@@ -63,19 +70,30 @@ export function RecentEvents() {
           </Link>
         </div>
 
-        <div className="relative ml-2 border-l border-tertiary-cyan/35 pl-7 sm:ml-[22%] sm:pl-12">
+        <div ref={timelineRef} className="relative ml-2 pl-7 sm:ml-[22%] sm:pl-12">
+          <span className="absolute inset-y-0 left-0 w-px bg-tertiary-cyan/20" />
+          <motion.span
+            aria-hidden="true"
+            className="absolute inset-x-0 left-0 top-0 w-px origin-top bg-tertiary-cyan shadow-[0_0_10px_rgba(0,242,254,0.9)]"
+            style={{ scaleY: progress }}
+          />
+          <motion.span
+            aria-hidden="true"
+            className="absolute -left-[5px] h-3 w-3 rounded-full border border-tertiary-cyan bg-space-black shadow-[0_0_16px_rgba(0,242,254,0.9)]"
+            style={{ top: signalPosition }}
+          />
           {events.map((event, index) => (
             <motion.article
               key={event.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20, y: 12 }}
+              whileInView={{ opacity: 1, x: 0, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.45, delay: index * 0.08 }}
               className="relative pb-10 last:pb-0 sm:grid sm:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] sm:gap-10"
             >
-              <span className="absolute -left-[34px] top-2 flex h-3.5 w-3.5 items-center justify-center rounded-full border border-tertiary-cyan bg-space-black shadow-[0_0_16px_rgba(0,242,254,0.8)] sm:-left-[55px]">
+              <motion.span className="absolute -left-[34px] top-2 flex h-3.5 w-3.5 items-center justify-center rounded-full border border-tertiary-cyan bg-space-black shadow-[0_0_16px_rgba(0,242,254,0.8)] sm:-left-[55px]" whileInView={{ scale: [1, 1.65, 1] }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.75, delay: 0.1 }}>
                 <span className="h-1.5 w-1.5 rounded-full bg-tertiary-cyan" />
-              </span>
+              </motion.span>
               <div className="mb-3 flex flex-col gap-1 sm:mb-0 sm:items-end sm:text-right">
                 <time dateTime={`${event.date}T${event.time}`} className="font-mono text-sm font-medium text-starlight-white">
                   {formatDate(event.date)}
