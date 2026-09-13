@@ -6,11 +6,10 @@ import { useEffect, useRef, useState } from "react";
  */
 export function useCountUp(target: number, start: boolean, durationMs = 1200) {
   const [value, setValue] = useState(0);
-  const hasRun = useRef(false);
+  const frameRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!start || hasRun.current) return;
-    hasRun.current = true;
+    if (!start) return;
 
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
@@ -27,11 +26,14 @@ export function useCountUp(target: number, start: boolean, durationMs = 1200) {
       const progress = Math.min((now - startTime) / durationMs, 1);
       const eased = 1 - (1 - progress) * (1 - progress);
       setValue(Math.round(eased * target));
-      if (progress < 1) requestAnimationFrame(tick);
+      if (progress < 1) frameRef.current = requestAnimationFrame(tick);
     }
 
-    const frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
+    frameRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+      frameRef.current = null;
+    };
   }, [start, target, durationMs]);
 
   return value;

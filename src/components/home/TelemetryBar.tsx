@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useCountUp } from "@/hooks/useCountUp";
 import { useCountdown } from "@/hooks/useCountdown";
 import { getEvents, getNextEvent } from "@/services/eventService";
+import { eventStartsAt } from "@/services/eventService";
 import { siteConfig } from "@/constants/site";
 import type { AstraEvent } from "@/types/Event";
 
@@ -40,7 +41,9 @@ export function TelemetryBar() {
   const eventsHosted = useCountUp(eventCount, ready && eventCount > 0);
   const yearsActive = useCountUp(new Date().getFullYear() - siteConfig.foundedYear, ready);
 
-  const countdown = useCountdown(nextEvent?.date ?? null);
+  const countdown = useCountdown(
+    nextEvent ? new Date(eventStartsAt(nextEvent)).toISOString() : null,
+  );
 
   return (
     <section className="container-astra">

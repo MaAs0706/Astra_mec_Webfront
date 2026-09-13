@@ -13,9 +13,11 @@ const variants: Record<Variant, string> = {
     "border border-metallic-silver/50 text-starlight-white hover:border-tertiary-cyan hover:text-tertiary-cyan hover:shadow-[0_0_15px_rgba(0,242,254,0.2)]",
 };
 
-interface ButtonProps extends ComponentPropsWithoutRef<"button"> {
+interface ButtonProps extends Omit<ComponentPropsWithoutRef<"button">, "onClick"> {
   variant?: Variant;
   to?: string;
+  /** Kept event-free so the same component can safely render as an anchor or a button. */
+  onClick?: () => void;
 }
 
 export function Button({ variant = "primary", to, className = "", children, ...props }: ButtonProps) {
@@ -23,7 +25,7 @@ export function Button({ variant = "primary", to, className = "", children, ...p
 
   if (to) {
     return (
-      <Link to={to} className={classes}>
+      <Link to={to} className={classes} onClick={props.onClick}>
         {children}
       </Link>
     );

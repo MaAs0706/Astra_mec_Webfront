@@ -143,7 +143,12 @@ export function Navbar() {
               <NavItem to={link.to} label={link.label} />
             </div>
           ))}
-          <Button to="/contact" variant="primary" className="mt-2 w-full">
+          <Button
+            to="/contact"
+            variant="primary"
+            className="mt-2 w-full"
+            onClick={() => setOpen(false)}
+          >
             Join Us
           </Button>
         </nav>
