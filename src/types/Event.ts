@@ -8,4 +8,5 @@ export interface AstraEvent {
   time: string;
   venue: string;
   summary: string;
+  description?: string;
 }
